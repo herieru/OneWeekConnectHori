@@ -48,12 +48,17 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     /// それぞれの状態時に、適用するマテリアル。
     /// </summary>
     [SerializeField]
-    private Material mat_normal, mat_select, mat_confilm;
+    private Material mat_normal = null, mat_select = null , mat_confilm = null;
 
     /// <summary>
     /// 自身のマテリアル情報
     /// </summary>
-    private Material my_material;
+    private Material my_material = null;
+
+    /// <summary>
+    /// 自分自身のメッシュレンダラーに関しての参照
+    /// </summary>
+    private MeshRenderer mesh_renderer = null;
 
     /// <summary>
     /// 辺の場所を示すためのものインデックス番号
@@ -102,13 +107,16 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
         switch (_state)
         {
             case CubeState.Normal:
-                my_material = mat_normal;
+                // my_material = mat_normal;
+                mesh_renderer.material = mat_normal;
                 break;
             case CubeState.Select:
-                my_material = mat_select;
+                //my_material = mat_select;
+                mesh_renderer.material = mat_select;
                 break;
             case CubeState.Confilm:
-                my_material = mat_confilm;
+                //my_material = mat_confilm;
+                mesh_renderer.material = mat_select;
                 break;
         }
     }
@@ -120,7 +128,7 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     // Use this for initialization
     void Start () 
 	{
-		
+        mesh_renderer = GetComponent<MeshRenderer>();
 	}
 	
 	// Update is called once per frame
@@ -137,6 +145,8 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     /// <param name="eventData"></param>
     public void OnPointerDown(PointerEventData eventData)
     {
+
+        Debug.Log("ポインタエンター来てる");
         if(cube_state == CubeState.Confilm)
         {
             //TODO:選択失敗みたいな音を鳴らす
