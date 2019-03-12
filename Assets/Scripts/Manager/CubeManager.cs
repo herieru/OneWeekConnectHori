@@ -21,37 +21,43 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CubeManager : MonoBehaviour 
+public class CubeManager : MonoBehaviour
 {
+    [SerializeField]
+    private StageData[] stage_datas;
+
+    [SerializeField]
+    private GameObject resborn_game_object;
+
     /// <summary>
     /// 1辺の最大の取得する場所
     /// </summary>
     private const int MAX_ADGE_NUM = 7;
 
     /// <summary>
+    /// ステージの管理者
+    /// </summary>
+    private StageManager stage_manager;
+
+    /// <summary>
     /// 管理を行うためのモノ　横ー＞縦指定
     /// </summary>
     private CubeController[,] cube_controllers;
 
-	// Use this for initialization
-	void Start () 
-	{
-        cube_controllers = new CubeController[MAX_ADGE_NUM, MAX_ADGE_NUM];
+    // Use this for initialization
+    void Start()
+    {
+        stage_manager = new StageManager(this.gameObject, resborn_game_object, null);
 
-        for(int _x = 0;_x< MAX_ADGE_NUM;_x++)
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            for(int _y = 0;_y < MAX_ADGE_NUM;_y++)
-            {
-                GameObject _cube = new GameObject(string.Format("Cube_{0}_{1}",_x,_y));
-                cube_controllers[_x,_y] = _cube.AddComponent<CubeController>();
-                cube_controllers[_x, _y].SettingPosition(_x, _y);
-            }
+            stage_manager.CreateStageData(stage_datas[0]);
         }
-	}
-	
-	// Update is called once per frame
-	void Update () 
-	{
-		
-	}
+    }
 }

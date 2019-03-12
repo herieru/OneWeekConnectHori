@@ -50,10 +50,7 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     [SerializeField]
     private Material mat_normal = null, mat_select = null , mat_confilm = null;
 
-    /// <summary>
-    /// 自身のマテリアル情報
-    /// </summary>
-    private Material my_material = null;
+  
 
     /// <summary>
     /// 自分自身のメッシュレンダラーに関しての参照
@@ -65,6 +62,14 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     /// </summary>
     private int x_adge_no = 0;
     private int y_adge_no = 0;
+
+    public GameObject Mine
+    {
+        get
+        {
+            return this.gameObject;
+        }
+    }
 
     private Subject<CubeNotice> select_notice = new Subject<CubeNotice>();
 
@@ -79,14 +84,17 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
         }
     }
 
-  
-
+    /// <summary>
+    /// 位置を設定する。
+    /// </summary>
+    /// <param name="_adge_x"></param>
+    /// <param name="_adge_y"></param>
     public void SettingPosition(int _adge_x,int _adge_y)
     {
         x_adge_no = _adge_x;
         y_adge_no = _adge_y;
-
-        //TODO:ここは、辺に沿った数分移動をさせる
+        float _distance = 2f;
+        gameObject.transform.position = new Vector3(x_adge_no * _distance, 0, y_adge_no * _distance);
     }
 
     /// <summary>
