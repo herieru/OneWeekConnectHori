@@ -48,8 +48,6 @@ public class CubeManager : MonoBehaviour
     void Start()
     {
         stage_manager = new StageManager(this.gameObject, resborn_game_object, null);
-
-
     }
 
     // Update is called once per frame

@@ -19,6 +19,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class StageManager 
 {
@@ -35,6 +36,8 @@ public class StageManager
     private GameObject cube_prefab;
     private GameObject coin_prefab;
     private StageData now_stage_data;
+
+    private GameObject player = null;
 
     /// <summary>
     /// 道をつなぐためのGameObject
@@ -85,6 +88,27 @@ public class StageManager
         stage_infomation_reset();
         setting_island_data();
         setting_coin_data();
+        setting_player();
+    }
+
+    /// <summary>
+    /// チェックしたい位置から、状態の取得を行う
+    /// たぶん処理的にはちょっと重い
+    /// </summary>
+    /// <param name="_check_x"></param>
+    /// <param name="_check_y"></param>
+    /// <returns></returns>
+    public List<StageIslandData>GetPlayerPosIsland(int _check_x,int _check_y)
+    {
+        foreach(var _list_data in now_stage_data.ConnectIsland)
+        {
+           if( _list_data.ConnetIsland.Exists((x) => x.x_index == _check_x && x.y_index == _check_y))
+            {
+                return _list_data.ConnetIsland;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -134,6 +158,10 @@ public class StageManager
                     , cube_controllers[_next_data.x_index, _next_data.y_index].gameObject.transform.position
                     , _next_data.x_index - _prev_data.x_index
                     , _next_data.y_index - _prev_data.y_index);
+
+                _prev_data = _next_data;
+
+                cube_controllers[_prev_data.x_index, _prev_data.y_index].SettingState(CubeState.Confilm);
             }   
         }
     }
@@ -186,6 +214,21 @@ public class StageManager
     private void setting_non_cube_data()
     {
 
+    }
+
+    /// <summary>
+    /// プレイヤーをセットする。
+    /// </summary>
+    private void setting_player()
+    {
+        Debug.Log("きてる");
+        if(null != player)
+        {
+            GameObject.Destroy(player);
+        }
+        player = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        var _around_character = player.AddComponent<AroundCharacter>();
+        _around_character.Init(now_stage_data.PlayerPos.x_index,now_stage_data.PlayerPos.y_index,this);
     }
 
 

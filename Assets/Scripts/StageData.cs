@@ -65,6 +65,12 @@ public class StageData :ScriptableObject
     /// つながっている島の情報
     /// </summary>
     [SerializeField]
-    private List<StageIslandDataList> ConnectIsland;
+    public List<StageIslandDataList> ConnectIsland;
+
+    /// <summary>
+    /// アイテムのデータのリストe
+    /// </summary>
+    [SerializeField]
+    public List<StageIslandData> item_data_list;
 
 }

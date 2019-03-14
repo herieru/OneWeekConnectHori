@@ -104,6 +104,7 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     public void SettingState(CubeState _set_state)
     {
         cube_state = _set_state;
+        change_material(_set_state);
     }
 
     /// <summary>
