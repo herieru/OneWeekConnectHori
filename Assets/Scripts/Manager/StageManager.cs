@@ -20,6 +20,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UniRx;
 
 public class StageManager 
 {
@@ -44,6 +45,14 @@ public class StageManager
     /// </summary>
     private List<GameObject> Cube = new List<GameObject>();
 
+    [SerializeField]
+    private List<StageIslandData> select_data = new List<StageIslandData>();
+
+    /// <summary>
+    /// 最後に選んだもの
+    /// </summary>
+    private StageIslandData now_end_select_data;
+
     /// <summary>
     /// コンストラクタ
     /// </summary>
@@ -66,6 +75,8 @@ public class StageManager
                 _cube.transform.parent = _root_object.transform;
                 cube_controllers[_x, _y] = _cube.GetComponent<CubeController>();
                 cube_controllers[_x, _y].SettingPosition(_x, _y);
+                cube_controllers[_x, _y].SelectNotice.Subscribe((_notice)=> select_island_parts(_notice));
+
             }
         }
     }
@@ -76,6 +87,7 @@ public class StageManager
     /// <param name="_stage_data"></param>
     public void CreateStageData(StageData _stage_data)
     {
+        now_stage_data = new StageData();
         now_stage_data = _stage_data;
         Reset();
     }
@@ -138,21 +150,28 @@ public class StageManager
 
         var _list = now_stage_data.ConnectIsland;
 
-       
+        Debug.LogFormat("_list:{0}", _list.Count);
 
         foreach (var _data_list in _list)
         {
             StageIslandData _prev_data = null;
             StageIslandData _next_data = null;
+            Debug.Log("島作成");
 
             foreach(var _data in _data_list.ConnetIsland)
             {
                 if(null == _prev_data)
                 {
                     _prev_data = _data;
+                    cube_controllers[_prev_data.x_index, _prev_data.y_index].SettingState(CubeState.Confilm);
+
                     continue;
                 }
                 _next_data = _data;
+
+                Debug.LogFormat("prev:x:{0},y:{1} next :x:{2},y:{3}"
+                    ,_prev_data.x_index,_prev_data.y_index
+                    ,_next_data.x_index,_next_data.y_index);
                 create_load_cube(
                     cube_controllers[_prev_data.x_index, _prev_data.y_index].gameObject.transform.position
                     , cube_controllers[_next_data.x_index, _next_data.y_index].gameObject.transform.position
@@ -180,6 +199,9 @@ public class StageManager
         _temp_x.y = _temp_x.z = 0;
         Vector3 _temp_y = _diff;
         _temp_y.y = _temp_y.x = 0;
+
+        _diff_x = System.Math.Abs(_diff_x);
+        _diff_y = System.Math.Abs(_diff_y);
 
         //X方向への移動
         for(int _x = 0; _x < _diff_x;_x++)
@@ -229,6 +251,96 @@ public class StageManager
         player = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var _around_character = player.AddComponent<AroundCharacter>();
         _around_character.Init(now_stage_data.PlayerPos.x_index,now_stage_data.PlayerPos.y_index,this);
+    }
+
+
+    /// <summary>
+    /// 選択終了
+    /// </summary>
+    public void SelectEnd()
+    {
+        if(select_data.Count < 2)
+        {
+            Debug.Log("選択しているデータを削除");
+            select_data.Clear();
+            return;
+        }
+
+        StageIslandDataList _connect_list = new StageIslandDataList();
+        _connect_list.ConnetIsland = new List<StageIslandData>();
+        _connect_list.ConnetIsland.AddRange(select_data);
+
+
+        now_stage_data.ConnectIsland.Add(_connect_list);
+
+        StageIslandData _prev_data = null;
+        StageIslandData _next_data = null;
+
+        foreach (var _data in _connect_list.ConnetIsland)
+        {
+            if (null == _prev_data)
+            {
+                _prev_data = _data;
+                cube_controllers[_prev_data.x_index, _prev_data.y_index].SettingState(CubeState.Confilm);
+
+                continue;
+            }
+            _next_data = _data;
+
+            Debug.LogFormat("prev:x:{0},y:{1} next :x:{2},y:{3}"
+                , _prev_data.x_index, _prev_data.y_index
+                , _next_data.x_index, _next_data.y_index);
+            create_load_cube(
+                cube_controllers[_prev_data.x_index, _prev_data.y_index].gameObject.transform.position
+                , cube_controllers[_next_data.x_index, _next_data.y_index].gameObject.transform.position
+                , _next_data.x_index - _prev_data.x_index
+                , _next_data.y_index - _prev_data.y_index);
+
+            _prev_data = _next_data;
+
+            cube_controllers[_prev_data.x_index, _prev_data.y_index].SettingState(CubeState.Confilm);
+
+        }
+
+    }
+
+    /// <summary>
+    /// 選択状態
+    /// </summary>
+    /// <param name="_notice"></param>
+    private void select_island_parts(CubeNotice _notice)
+    {
+        Debug.Log("通知状態がきたよ");
+        StageIslandData _data = new StageIslandData()
+        {
+            x_index = _notice.x_index,
+            y_index = _notice.y_index
+        };
+
+        if(null != now_end_select_data)
+        {
+            //変更点がある状態か？
+            if(false == (_data.x_index  > now_end_select_data.x_index 
+                || now_end_select_data.x_index < _data.x_index
+                || _data.y_index > now_end_select_data.y_index
+                || now_end_select_data.y_index < _data.y_index))
+            {
+                Debug.Log("差分がなかったため、追加できない。");
+                return;
+            }
+
+            ///すでに存在していたので、失敗
+            if(select_data.Exists((_serch)=>
+                _serch.x_index == _data.x_index && _serch.y_index == _data.y_index))
+            {
+                Debug.Log("すでに存在しているので、失敗");
+                return;
+            }
+
+        }
+        now_end_select_data = _data;
+
+        select_data.Add(_data);
     }
 
 

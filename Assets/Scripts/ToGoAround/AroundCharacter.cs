@@ -52,11 +52,22 @@ public class AroundCharacter : MonoBehaviour
     [SerializeField]
     private bool dirction_move_flg = true;
 
+
+    /// <summary>
+    /// 向かう方向を保持する。
+    /// </summary>
+    [SerializeField]
+    private StageIslandData direction  =new StageIslandData();
+
     /// <summary>
     /// ステージデータ部分
     /// </summary>
     private StageManager stage_manager;
 
+    /// <summary>
+    /// 現在の島データを取得する。
+    /// </summary>
+    [SerializeField]
     List<StageIslandData> now_island;
 
 
@@ -101,14 +112,46 @@ public class AroundCharacter : MonoBehaviour
 
 		if(Input.GetKeyDown(KeyCode.P))
         {
-            transform_positon();
-            next_position_setting();
+            if (false == check_stage_islrand_jump())
+            {
+                transform_positon();
+                next_position_setting();
+            }
         }
 	}
 
 
+    private bool check_stage_islrand_jump()
+    {
+        int _serch_index_x = x + direction.x_index;
+        int _serch_index_y = y + direction.y_index;
+
+        if (now_island.Exists((_data) => _data.x_index == _serch_index_x && _data.y_index == _serch_index_y))
+        {
+            return false;
+        }
+
+        var _list = stage_manager.GetPlayerPosIsland(_serch_index_x, _serch_index_y);
+        if(null != _list)
+        {
+            now_island = _list;
+            island_index = _list.FindIndex((data) => data.x_index == _serch_index_x && data.y_index == _serch_index_y);
+            next_x = _serch_index_x;
+            next_y = _serch_index_y;
+            //向かう方向は常に一定
+            dirction_move_flg = true;
+            if (island_index == _list.Count - 1)
+            {
+                dirction_move_flg = false;
+            }
+            transform_positon();
+            return true;
+        }
+        return false;
+    }
+
     /// <summary>
-    /// 位置を移動する　デバック
+    /// 位置を移動する　nextの値に入っている箇所に移動する。
     /// </summary>
     private void transform_positon()
     {
@@ -120,6 +163,13 @@ public class AroundCharacter : MonoBehaviour
     /// </summary>
     private void next_position_setting()
     {
+
+        direction.x_index = next_x - x;
+        direction.y_index = next_y - y;
+
+        x = next_x;
+        y = next_y;
+
         if(dirction_move_flg)
         {
             
@@ -149,6 +199,8 @@ public class AroundCharacter : MonoBehaviour
                 next_y = _data.y_index;
             }
         }
+
+        
 
        
     }

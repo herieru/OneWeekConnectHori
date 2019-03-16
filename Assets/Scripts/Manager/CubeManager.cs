@@ -57,5 +57,12 @@ public class CubeManager : MonoBehaviour
         {
             stage_manager.CreateStageData(stage_datas[0]);
         }
+
+        //右クリック
+        if(Input.GetMouseButtonDown(1))
+        {
+            Debug.Log("選択終了");
+            stage_manager.SelectEnd();
+        }
     }
 }
