@@ -37,6 +37,7 @@ public class StageManager
     private GameObject cube_prefab;
     private GameObject coin_prefab;
     private StageData now_stage_data;
+    private PlayableStageData play_stage_data;
 
     private GameObject player = null;
 
@@ -79,7 +80,7 @@ public class StageManager
 
             }
         }
-    }
+    } 
 
     /// <summary>
     /// ステージデータを作成する。
@@ -87,8 +88,8 @@ public class StageManager
     /// <param name="_stage_data"></param>
     public void CreateStageData(StageData _stage_data)
     {
-        now_stage_data = new StageData();
         now_stage_data = _stage_data;
+        play_stage_data = new PlayableStageData(now_stage_data);
         Reset();
     }
 
@@ -302,6 +303,8 @@ public class StageManager
 
         }
 
+        select_data.Clear();
+
     }
 
     /// <summary>
@@ -311,7 +314,7 @@ public class StageManager
     private void select_island_parts(CubeNotice _notice)
     {
         Debug.Log("通知状態がきたよ");
-        StageIslandData _data = new StageIslandData()
+        StageIslandData _select = new StageIslandData()
         {
             x_index = _notice.x_index,
             y_index = _notice.y_index
@@ -320,10 +323,10 @@ public class StageManager
         if(null != now_end_select_data)
         {
             //変更点がある状態か？
-            if(false == (_data.x_index  > now_end_select_data.x_index 
-                || now_end_select_data.x_index < _data.x_index
-                || _data.y_index > now_end_select_data.y_index
-                || now_end_select_data.y_index < _data.y_index))
+            if(false == (_select.x_index  > now_end_select_data.x_index 
+                || now_end_select_data.x_index > _select.x_index
+                || _select.y_index > now_end_select_data.y_index
+                || now_end_select_data.y_index > _select.y_index))
             {
                 Debug.Log("差分がなかったため、追加できない。");
                 return;
@@ -331,16 +334,23 @@ public class StageManager
 
             ///すでに存在していたので、失敗
             if(select_data.Exists((_serch)=>
-                _serch.x_index == _data.x_index && _serch.y_index == _data.y_index))
+                _serch.x_index == _select.x_index && _serch.y_index == _select.y_index))
             {
                 Debug.Log("すでに存在しているので、失敗");
+                var _remove_data = select_data.Find((_serch) =>
+                _serch.x_index == _select.x_index && _serch.y_index == _select.y_index);
+                if(null != _remove_data)
+                {
+                    select_data.Remove(_remove_data);
+                }
+                
                 return;
             }
 
         }
-        now_end_select_data = _data;
+        now_end_select_data = _select;
 
-        select_data.Add(_data);
+        select_data.Add(_select);
     }
 
 
