@@ -72,6 +72,16 @@ public class AroundCharacter : MonoBehaviour
 
 
     /// <summary>
+    /// 経過時間
+    /// </summary>
+    private float elapsed_time = 0f;
+
+    /// <summary>
+    /// 先に進むタイミングの時間
+    /// </summary>
+    private readonly float StepElapsedValue = 0.8f;
+
+    /// <summary>
     /// ステージ上のインデックス。
     /// </summary>
     /// <param name="_x"></param>
@@ -110,13 +120,27 @@ public class AroundCharacter : MonoBehaviour
             return;
         }
 
-		if(Input.GetKeyDown(KeyCode.P))
+        elapsed_time += Time.deltaTime;
+        if(elapsed_time < StepElapsedValue)
+        {
+            return;
+        }
+        elapsed_time -= StepElapsedValue;
+
+
+		//if(Input.GetKeyDown(KeyCode.P))
         {
             if (false == check_stage_islrand_jump())
             {
                 transform_positon();
                 next_position_setting();
             }
+        }
+
+        ///ゴールチェック
+        if(stage_manager.CheakGoal(x,y))
+        {
+            Debug.Log("ゴールした");
         }
 	}
 

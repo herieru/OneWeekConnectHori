@@ -30,11 +30,13 @@ MonoBehaviour:
     - x_index: 6
       y_index: 4
   - ConnetIsland:
-    - x_index: 4
+    - x_index: 2
       y_index: 5
-    - x_index: 5
-      y_index: 5
-    - x_index: 6
+    - x_index: 2
+      y_index: 6
+    - x_index: 3
+      y_index: 6
+    - x_index: 3
       y_index: 5
   item_data_list:
   - x_index: 6
@@ -43,3 +45,6 @@ MonoBehaviour:
     y_index: 5
   - x_index: 4
     y_index: 5
+  goal_data:
+    x_index: 1
+    y_index: 1

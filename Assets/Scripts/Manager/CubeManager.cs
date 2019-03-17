@@ -20,14 +20,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CubeManager : MonoBehaviour
 {
     [SerializeField]
-    private StageData[] stage_datas;
+    private StageData[] stage_datas = null;
 
     [SerializeField]
-    private GameObject resborn_game_object;
+    private GameObject resborn_game_object = null;
+
+    /// <summary>
+    /// クリアしたときに出すクリアのテキスト
+    /// </summary>
+    [SerializeField]
+    Text clear_text = null;
+
+    [SerializeField]
+    GameObject ClearObject = null;
+
+    [SerializeField]
+    private MenuUIController menu_ui_controller;
 
     /// <summary>
     /// 1辺の最大の取得する場所
@@ -48,6 +61,14 @@ public class CubeManager : MonoBehaviour
     void Start()
     {
         stage_manager = new StageManager(this.gameObject, resborn_game_object, null);
+        StartCoroutine(stage_load());
+    }
+
+    private IEnumerator stage_load()
+    {
+        yield return new WaitForSeconds(0.2f);
+        stage_manager.CreateStageData(stage_datas[0]);
+        yield break;
     }
 
     // Update is called once per frame
@@ -63,6 +84,13 @@ public class CubeManager : MonoBehaviour
         {
             Debug.Log("選択終了");
             stage_manager.SelectEnd();
+        }
+
+
+        if(stage_manager.Clear)
+        {
+            ClearObject.SetActive(true);
+            clear_text.gameObject.SetActive(true);
         }
     }
 }

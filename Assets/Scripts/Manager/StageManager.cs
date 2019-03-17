@@ -55,6 +55,22 @@ public class StageManager
     private StageIslandData now_end_select_data;
 
     /// <summary>
+    /// クリアしたかどうか？
+    /// </summary>
+    private bool clear_flg = false;
+    
+    /// <summary>
+    /// クリア
+    /// </summary>
+    public bool Clear
+    {
+        get
+        {
+            return clear_flg;
+        }
+    }
+
+    /// <summary>
     /// コンストラクタ
     /// </summary>
     /// <param name="_root_object">ルートとなるオブジェクト</param>
@@ -102,6 +118,7 @@ public class StageManager
         setting_island_data();
         setting_coin_data();
         setting_player();
+        setting_goal();
     }
 
     /// <summary>
@@ -113,7 +130,7 @@ public class StageManager
     /// <returns></returns>
     public List<StageIslandData>GetPlayerPosIsland(int _check_x,int _check_y)
     {
-        foreach(var _list_data in now_stage_data.ConnectIsland)
+        foreach(var _list_data in play_stage_data.ConnectIsland)
         {
            if( _list_data.ConnetIsland.Exists((x) => x.x_index == _check_x && x.y_index == _check_y))
             {
@@ -121,7 +138,42 @@ public class StageManager
             }
         }
 
+        if(play_stage_data.GoalData.x_index == _check_x 
+            && play_stage_data.GoalData.y_index == _check_y)
+        {
+            var _list = new List<StageIslandData>();
+            var _data = new StageIslandData()
+            {
+                x_index = play_stage_data.GoalData.x_index,
+                y_index = play_stage_data.GoalData.y_index
+            };
+
+
+
+            _list.Add(_data);
+
+            return _list;
+
+        }
+
         return null;
+    }
+
+    /// <summary>
+    /// ゴールに入っているかどうか？
+    /// </summary>
+    /// <param name="_check_x"></param>
+    /// <param name="_check_y"></param>
+    /// <returns></returns>
+    public bool CheakGoal(int _check_x, int _check_y)
+    {
+        if (play_stage_data.GoalData.x_index == _check_x
+            && play_stage_data.GoalData.y_index == _check_y)
+        {
+            clear_flg = true;
+            return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -149,7 +201,7 @@ public class StageManager
         }
         Cube.Clear();
 
-        var _list = now_stage_data.ConnectIsland;
+        var _list = play_stage_data.ConnectIsland;
 
         Debug.LogFormat("_list:{0}", _list.Count);
 
@@ -233,9 +285,11 @@ public class StageManager
 
     /// <summary>
     /// Cubeが存在しないデータを作成する。
+    /// Cubeは作っている状態でなければいけない。
     /// </summary>
     private void setting_non_cube_data()
     {
+        
 
     }
 
@@ -251,7 +305,18 @@ public class StageManager
         }
         player = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         var _around_character = player.AddComponent<AroundCharacter>();
-        _around_character.Init(now_stage_data.PlayerPos.x_index,now_stage_data.PlayerPos.y_index,this);
+        _around_character.Init(play_stage_data.PlayerPos.x_index, play_stage_data.PlayerPos.y_index,this);
+    }
+
+
+    /// <summary>
+    /// ゴールを設定する。
+    /// </summary>
+    private void setting_goal()
+    {
+        Debug.Log("ゴール設定");
+        var _goal = play_stage_data.GoalData;
+        cube_controllers[_goal.x_index, _goal.y_index].SettingState(CubeState.Goal);
     }
 
 
@@ -272,7 +337,7 @@ public class StageManager
         _connect_list.ConnetIsland.AddRange(select_data);
 
 
-        now_stage_data.ConnectIsland.Add(_connect_list);
+        play_stage_data.ConnectIsland.Add(_connect_list);
 
         StageIslandData _prev_data = null;
         StageIslandData _next_data = null;

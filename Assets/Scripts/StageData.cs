@@ -73,4 +73,90 @@ public class StageData :ScriptableObject
     [SerializeField]
     public List<StageIslandData> item_data_list;
 
+    /// <summary>
+    /// ゴールの場所
+    /// </summary>
+    [SerializeField]
+    public StageIslandData goal_data;
+
+}
+
+//プレイ用のステージデータ
+public class PlayableStageData
+{
+    /// <summary>
+    /// ステージデータの中身をコピーする
+    /// </summary>
+    /// <param name="_stage_data"></param>
+    public PlayableStageData(StageData _stage_data)
+    {
+        PlayerPos = new StageIslandData()
+        {
+            x_index = _stage_data.PlayerPos.x_index,
+            y_index = _stage_data.PlayerPos.y_index
+        };
+
+        LoopIndex = _stage_data.LoopIndex;
+
+        ConnectIsland = new List<StageIslandDataList>();
+
+        foreach(var _list_data in _stage_data.ConnectIsland)
+        {
+            List<StageIslandData> _is_land_data = new List<StageIslandData>();
+
+            foreach(var _data in _list_data.ConnetIsland)
+            {
+                StageIslandData _island_data = new StageIslandData()
+                {
+                    x_index = _data.x_index,
+                    y_index = _data.y_index
+                };
+
+                _is_land_data.Add(_island_data);
+            }
+            StageIslandDataList _chank_list = new StageIslandDataList()
+            {
+                ConnetIsland = _is_land_data,
+            };
+            ConnectIsland.Add(_chank_list);
+        }//for each
+
+
+        StageIslandData _goaldata = new StageIslandData()
+        {
+            x_index = _stage_data.goal_data.x_index,
+            y_index = _stage_data.goal_data.y_index
+        };
+
+        GoalData = _goaldata;
+
+
+    }
+
+    /// <summary>
+    /// プレイヤーの位置
+    /// </summary>
+    public StageIslandData PlayerPos;
+
+    /// <summary>
+    /// プレイヤー自体が、移動する際に、どのインデックスに向かうか？
+    /// 設定する際には、必ず隣接している部分と、つながっている数を元に、選ぶ必要がある。
+    /// </summary>
+    public int LoopIndex;
+
+    /// <summary>
+    /// つながっている島の情報
+    /// </summary>
+    public List<StageIslandDataList> ConnectIsland;
+
+    /// <summary>
+    /// アイテムのデータのリスト
+    /// </summary>
+    public List<StageIslandData> item_data_list;
+
+    /// <summary>
+    /// ゴールの場所
+    /// </summary>
+    [SerializeField]
+    public StageIslandData GoalData;
 }

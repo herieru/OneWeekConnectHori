@@ -24,4 +24,5 @@ public enum CubeState
     Normal,     //通常状態
     Select,     //選択状態
     Confilm,    //確定状態
+    Goal,       //ゴール状態
 }

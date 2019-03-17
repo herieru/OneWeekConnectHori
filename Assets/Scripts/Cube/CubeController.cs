@@ -48,7 +48,7 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     /// それぞれの状態時に、適用するマテリアル。
     /// </summary>
     [SerializeField]
-    private Material mat_normal = null, mat_select = null , mat_confilm = null;
+    private Material mat_normal = null, mat_select = null , mat_confilm = null,mat_goal = null;
 
   
 
@@ -127,6 +127,9 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
                 //my_material = mat_confilm;
                 mesh_renderer.material = mat_select;
                 break;
+            case CubeState.Goal:
+                mesh_renderer.material = mat_goal;
+                break;
         }
     }
 
@@ -156,9 +159,10 @@ public class CubeController : MonoBehaviour ,IPointerDownHandler
     {
 
         Debug.Log("ポインタエンター来てる");
-        if(cube_state == CubeState.Confilm)
+        if(cube_state == CubeState.Confilm　|| cube_state == CubeState.Goal)
         {
             //TODO:選択失敗みたいな音を鳴らす
+
             return;
         }
         //TODO:選択した音を鳴らす

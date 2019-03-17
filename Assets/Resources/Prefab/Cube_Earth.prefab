@@ -111,3 +111,4 @@ MonoBehaviour:
   mat_normal: {fileID: 2100000, guid: 619d1f66325e0b94fae5634867424aff, type: 2}
   mat_select: {fileID: 2100000, guid: bcdffd7d457daca44ae3372a782a67c3, type: 2}
   mat_confilm: {fileID: 2100000, guid: 341b398fe8dd1d943bfe15f44376936c, type: 2}
+  mat_goal: {fileID: 2100000, guid: ba98ea438e7e8b64e86f44a0cc9f1b79, type: 2}
