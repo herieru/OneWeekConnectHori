@@ -57,28 +57,34 @@ public class CubeManager : MonoBehaviour
     /// </summary>
     private CubeController[,] cube_controllers;
 
+    private int select_stage = 0;
+
     // Use this for initialization
     void Start()
     {
         stage_manager = new StageManager(this.gameObject, resborn_game_object, null);
+        
+    }
+
+    /// <summary>
+    /// ステージをロードする。
+    /// </summary>
+    /// <param name="_stage_no"></param>
+    public void LoadStage(int _stage_no)
+    {
+        select_stage = _stage_no;
         StartCoroutine(stage_load());
     }
 
     private IEnumerator stage_load()
     {
-        yield return new WaitForSeconds(0.2f);
-        stage_manager.CreateStageData(stage_datas[0]);
+        stage_manager.CreateStageData(stage_datas[select_stage]);
         yield break;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            stage_manager.CreateStageData(stage_datas[0]);
-        }
-
         //右クリック
         if(Input.GetMouseButtonDown(1))
         {
@@ -89,6 +95,8 @@ public class CubeManager : MonoBehaviour
 
         if(stage_manager.Clear)
         {
+            stage_manager.Clear = false;
+            stage_manager.UnloadStage();
             ClearObject.SetActive(true);
             clear_text.gameObject.SetActive(true);
         }

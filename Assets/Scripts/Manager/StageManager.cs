@@ -68,6 +68,10 @@ public class StageManager
         {
             return clear_flg;
         }
+        set
+        {
+            clear_flg = value;
+        }
     }
 
     /// <summary>
@@ -97,6 +101,19 @@ public class StageManager
             }
         }
     } 
+
+    /// <summary>
+    /// ステージ情報をアンロードする。
+    /// </summary>
+    public void UnloadStage()
+    {
+        foreach(var _cube in Cube)
+        {
+            GameObject.Destroy(_cube);
+        }
+        Cube.Clear();
+        GameObject.Destroy(player);
+    }
 
     /// <summary>
     /// ステージデータを作成する。
@@ -413,6 +430,8 @@ public class StageManager
             }
 
         }
+
+        SoundController.Instance.PlaySe(4);
         now_end_select_data = _select;
 
         select_data.Add(_select);

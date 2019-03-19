@@ -141,6 +141,8 @@ public class AroundCharacter : MonoBehaviour
         if(stage_manager.CheakGoal(x,y))
         {
             Debug.Log("ゴールした");
+            //クリアした音
+            SoundController.Instance.PlaySe(1);
         }
 	}
 
@@ -169,6 +171,10 @@ public class AroundCharacter : MonoBehaviour
                 dirction_move_flg = false;
             }
             transform_positon();
+
+            //jumpの音
+            SoundController.Instance.PlaySe(3);
+
             return true;
         }
         return false;

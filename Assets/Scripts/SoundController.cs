@@ -21,23 +21,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundController : MonoBehaviour 
+public class SoundController : SingletonMonoBehavior<SoundController> 
 {
-    private static SoundController instance;
-
-    public static SoundController Sound
-    {
-        get
-        {
-            if (null == instance)
-            {
-                instance = GameObject.Find("BGMManager").GetComponent<SoundController>();
-            }
-            return instance;
-        }
-    }
-
-
 
     [SerializeField]
     private List<AudioClip> bgm = new List<AudioClip>();
